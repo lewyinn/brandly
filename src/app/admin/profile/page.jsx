@@ -5,6 +5,7 @@ import { useActionState, useEffect, useRef, useState } from "react";
 import { signOutAction } from "../login/actions";
 import { createClient } from "@/lib/supabase/client";
 import Image from "next/image";
+import Swal from "sweetalert2";
 
 export default function AdminProfile() {
     const { setSidebarOpen } = useSidebar();
@@ -71,7 +72,11 @@ export default function AdminProfile() {
             const up = await fetch('/api/upload-logo', { method: 'POST', body: logoFd });
             const { url, error } = await up.json();
             if (error) {
-                alert(error);
+                Swal.fire({
+                    icon: "error",
+                    title: "Gagal Upload Logo",
+                    text: error
+                });
                 return;
             }
             fd.set('logo_url', url);
@@ -87,8 +92,27 @@ export default function AdminProfile() {
             facebook: fd.get('facebook'),
         };
 
-        await fetch('/api/profile', { method: 'POST', body: JSON.stringify(body) });
-        await load();
+        try {
+            const res = await fetch('/api/profile', { method: 'POST', body: JSON.stringify(body) });
+            if (!res.ok) throw new Error("Gagal menyimpan data");
+
+            await load();
+
+            Swal.fire({
+                icon: "success",
+                title: "Berhasil!",
+                text: "Profil berhasil disimpan",
+                timer: 1500,
+                showConfirmButton: false
+            });
+
+        } catch (err) {
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: err.message || "Terjadi kesalahan"
+            });
+        }
     }
 
     const handleFileChange = (e) => {

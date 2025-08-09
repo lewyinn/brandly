@@ -4,6 +4,7 @@ import { Menu, CheckCircle, ChevronLeft } from "lucide-react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import Swal from "sweetalert2";
 
 const TYPES = ["UMKM", "Perusahaan", "Sekolah"];
 
@@ -76,9 +77,19 @@ export default function EditProductPage() {
         setSaving(false);
 
         if (json?.error) {
-            alert(json.error);
+            Swal.fire({
+                icon: "Error",
+                title: "Gagal Memperbaharui Product!",
+                text: json.error,
+            });
         } else {
-            alert("Produk berhasil diperbarui");
+            Swal.fire({
+                icon: "success",
+                title: "Berhasil!",
+                text: "Product Berhasil Dipebaharui!",
+                timer: 1500,
+                showConfirmButton: false
+            });
             router.push("/admin/products");
         }
     }

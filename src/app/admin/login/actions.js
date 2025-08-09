@@ -13,7 +13,7 @@ export async function signInAction(prevState, formData) {
         return { ok: false, message: error.message };
     }
 
-    redirect('/admin/dashboard');
+    return { ok: true };
 }
 
 export async function signOutAction() {

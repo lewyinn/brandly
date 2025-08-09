@@ -1,10 +1,12 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useActionState } from "react";
 import { useFormStatus } from "react-dom";
 import { signInAction } from "./actions";
 import { Mail, Lock, Eye, EyeOff, LogIn } from "lucide-react";
+import { useRouter } from "next/navigation";
+import Swal from "sweetalert2";
 
 function SubmitButton() {
     const { pending } = useFormStatus();
@@ -12,8 +14,7 @@ function SubmitButton() {
         <button
             type="submit"
             disabled={pending}
-            className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm transition hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-400 disabled:opacity-60"
-        >
+            className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm transition hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-400 disabled:opacity-60">
             <LogIn className="h-4 w-4" />
             {pending ? "Memproses…" : "Masuk"}
         </button>
@@ -21,8 +22,25 @@ function SubmitButton() {
 }
 
 export default function LoginPage() {
+    const router = useRouter();
     const [state, formAction] = useActionState(signInAction, null);
     const [showPassword, setShowPassword] = useState(false);
+
+    useEffect(() => {
+        if (!state) return;
+        if (state.ok === false) {
+            Swal.fire({ icon: "error", title: "Login gagal", text: state.message });
+        } else if (state.ok === true) {
+            Swal.fire({
+                icon: "success",
+                title: "Berhasil masuk",
+                timer: 1200,
+                showConfirmButton: false,
+            }).then(() => {
+                router.push("/admin/dashboard?login=success");
+            });
+        }
+    }, [state, router]);
 
     return (
         <div className="min-h-screen bg-gradient-to-b from-slate-900 via-slate-900 to-slate-950">
@@ -95,13 +113,6 @@ export default function LoginPage() {
                             </button>
                         </div>
                     </div>
-
-                    {/* Error */}
-                    {state && !state.ok && (
-                        <div className="mb-4 rounded-lg border border-red-500/30 bg-red-500/10 px-3 py-2 text-xs text-red-200">
-                            {state.message}
-                        </div>
-                    )}
 
                     {/* Submit */}
                     <SubmitButton />

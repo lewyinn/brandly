@@ -4,6 +4,7 @@ import { Menu, CheckCircle, ChevronLeft } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import Swal from "sweetalert2";
 
 const TYPES = ["UMKM", "Perusahaan", "Sekolah"];
 
@@ -51,9 +52,19 @@ export default function CreateProductPage() {
         setSaving(false);
 
         if (json?.error) {
-            alert(json.error);
+            Swal.fire({
+                icon: "error",
+                title: "Gagal Membuat Product",
+                text: json.error
+            });
         } else {
-            alert("Produk berhasil dibuat");
+            Swal.fire({
+                icon: "success",
+                title: "Berhasil!",
+                text: "Product Berhasil Dibuat!",
+                timer: 1500,
+                showConfirmButton: false
+            });
             router.push("/admin/products"); // arahkan kembali ke listing
         }
     }

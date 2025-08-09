@@ -4,6 +4,8 @@ import { CreditCard, Menu, TrendingUp, UserPlus, Users, User } from 'lucide-reac
 import React, { useActionState, useEffect, useRef, useState } from 'react'
 import { signOutAction } from '../login/actions';
 import { createClient } from '@/lib/supabase/client';
+import { useSearchParams } from 'next/navigation';
+import Swal from 'sweetalert2';
 
 export default function DashboardPage() {
     const { setSidebarOpen } = useSidebar();
@@ -76,6 +78,19 @@ export default function DashboardPage() {
             icon: TrendingUp,
         },
     ];
+
+    const sp = useSearchParams();
+
+    useEffect(() => {
+        if (sp.get("login") === "success") {
+            Swal.fire({
+                icon: "success",
+                title: "Selamat datang!",
+                timer: 1200,
+                showConfirmButton: false,
+            });
+        }
+    }, [sp]);
 
     return (
         <>

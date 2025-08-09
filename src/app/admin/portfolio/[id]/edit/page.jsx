@@ -121,9 +121,19 @@ export default function EditPortfolioPage() {
         setSaving(false);
 
         if (json?.error) {
-            alert(json.error);
+            Swal.fire({
+                icon: "error",
+                title: "Gagal Memperbaharui Portfolio!",
+                text: json.error,
+            });
         } else {
-            alert("Portfolio berhasil diperbarui");
+            Swal.fire({
+                icon: "success",
+                title: "Berhasil!",
+                text: "Portfolio Berhasil Diperbaharui!",
+                timer: 1500,
+                showConfirmButton: false
+            });
             router.push("/admin/portfolio");
         }
     }

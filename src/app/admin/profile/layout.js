@@ -6,7 +6,7 @@ import { SidebarProvider } from "@/context/SidebarContext";
 export default function DashboardLayout ({children}) {
     return (
         <SidebarProvider>
-            <div className="flex h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-300">
+            <div className="flex min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-300">
                 {/* Sidebar */}
                 <Sidebar />
 

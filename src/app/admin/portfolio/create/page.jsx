@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import Swal from "sweetalert2";
 
 const TYPES = ["Website", "Social Media"];
 
@@ -86,9 +87,19 @@ export default function CreatePortfolioPage() {
         setSaving(false);
 
         if (json?.error) {
-            alert(json.error);
+            Swal.fire({
+                icon: "error",
+                title: "Gagal Membuat Portfolio!",
+                text: json.error,
+            });
         } else {
-            alert("Portfolio berhasil dibuat");
+            Swal.fire({
+                icon: "success",
+                title: "Berhasil!",
+                text: "Portfolio Berhasil Dibuat!",
+                timer: 1500,
+                showConfirmButton: false
+            });
             router.push("/admin/portfolio");
         }
     }
