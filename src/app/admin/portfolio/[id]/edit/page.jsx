@@ -6,6 +6,7 @@ import { useRouter, useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import Image from "next/image";
+import Swal from "sweetalert2";
 
 const TYPES = ["Website", "Social Media"];
 
@@ -42,33 +43,64 @@ export default function EditPortfolioPage() {
     }
 
     const handleFileChange = async (e) => {
-        const file = e.target.files[0];
+        const file = e.target.files?.[0];
         if (!file) return;
+
+        if (!file.type?.startsWith("image/")) {
+            Swal.fire({ icon: "error", title: "File tidak valid", text: "Harus berupa gambar." });
+            return;
+        }
 
         // Preview lokal (blob URL)
         setPreview(URL.createObjectURL(file));
 
-        // Upload ke supabase
         try {
             setUploading(true);
+
+            // tampilkan modal loading TANPA await
+            Swal.fire({
+                title: "Mengunggah...",
+                text: "Mohon tunggu sebentar",
+                allowOutsideClick: false,
+                didOpen: () => Swal.showLoading(),
+                showConfirmButton: false,
+            });
+
             const supabase = createClient();
             const fileExt = file.name.split(".").pop();
             const fileName = `${Date.now()}.${fileExt}`;
 
-            const { error } = await supabase.storage
-                .from("portfolio")
-                .upload(`portfolios/${fileName}`, file);
+            const { error: uploadErr } = await supabase.storage
+                .from("portfolio") // pastikan nama bucket = "portfolio"
+                .upload(`portfolios/${fileName}`, file, {
+                    cacheControl: "3600",
+                    upsert: false,
+                    contentType: file.type || "image/png",
+                });
 
-            if (error) throw error;
+            if (uploadErr) throw uploadErr;
 
-            const { data } = supabase.storage
+            const { data: pub } = supabase.storage
                 .from("portfolio")
                 .getPublicUrl(`portfolios/${fileName}`);
 
-            // Simpan URL hasil upload
-            setForm((s) => ({ ...s, foto_url: data.publicUrl }));
+            setForm((s) => ({ ...s, foto_url: pub.publicUrl }));
+
+            // tutup loading, lalu tampilkan sukses
+            Swal.close();
+            await Swal.fire({
+                icon: "success",
+                title: "Upload berhasil",
+                timer: 1200,
+                showConfirmButton: false,
+            });
         } catch (err) {
-            alert("Upload gagal: " + err.message);
+            Swal.close();
+            await Swal.fire({
+                icon: "error",
+                title: "Upload gagal",
+                text: err?.message || "Terjadi kesalahan saat mengunggah file.",
+            });
         } finally {
             setUploading(false);
         }
@@ -76,13 +108,15 @@ export default function EditPortfolioPage() {
 
     async function loadPortfolio() {
         try {
-            const res = await fetch(`/api/portfolios/${id}`);
-            const json = await res.json();
-            if (json?.error) {
-                alert(json.error);
-                router.push("/admin/portfolio");
-                return;
+            setLoading(true);
+            const res = await fetch(`/api/portfolios/${id}`, { cache: "no-store" });
+            if (!res.ok) {
+                const msg = await res.text();
+                throw new Error(msg || "Gagal memuat data");
             }
+            const json = await res.json();
+            if (json?.error) throw new Error(json.error);
+
             setForm({
                 foto_url: json.foto_url || "",
                 type: json.type || "",
@@ -92,7 +126,12 @@ export default function EditPortfolioPage() {
                 link_portfolio: json.link_portfolio || "",
             });
         } catch (err) {
-            alert("Gagal memuat data: " + err.message);
+            await Swal.fire({
+                icon: "error",
+                title: "Gagal memuat data",
+                text: err?.message || "Terjadi kesalahan",
+            });
+            router.push("/admin/portfolio");
         } finally {
             setLoading(false);
         }
@@ -100,41 +139,65 @@ export default function EditPortfolioPage() {
 
     async function onSubmit(e) {
         e.preventDefault();
-        if (!form.judul) return alert("Judul wajib diisi");
-        if (!form.type) return alert("Type wajib dipilih");
+        if (!form.judul) {
+            Swal.fire({ icon: "warning", title: "Judul wajib diisi" });
+            return;
+        }
+        if (!form.type) {
+            Swal.fire({ icon: "warning", title: "Type wajib dipilih" });
+            return;
+        }
 
-        setSaving(true);
-        const res = await fetch(`/api/portfolios/${id}`, {
-            method: "PUT",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                foto_url: form.foto_url,
-                type: form.type,
-                judul: form.judul,
-                deskripsi: form.deskripsi,
-                tech: toArray(form.techText),
-                link_portfolio: form.link_portfolio,
-            }),
-        });
+        try {
+            setSaving(true);
 
-        const json = await res.json();
-        setSaving(false);
-
-        if (json?.error) {
+            // modal loading TANPA await
             Swal.fire({
-                icon: "error",
-                title: "Gagal Memperbaharui Portfolio!",
-                text: json.error,
+                title: "Menyimpan...",
+                text: "Mohon tunggu sebentar",
+                allowOutsideClick: false,
+                didOpen: () => Swal.showLoading(),
+                showConfirmButton: false,
             });
-        } else {
-            Swal.fire({
+
+            const res = await fetch(`/api/portfolios/${id}`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    foto_url: form.foto_url,
+                    type: form.type,
+                    judul: form.judul,
+                    deskripsi: form.deskripsi,
+                    tech: toArray(form.techText),
+                    link_portfolio: form.link_portfolio,
+                }),
+            });
+
+            const json = await res.json().catch(() => ({}));
+            if (!res.ok || json?.error) {
+                const msg = json?.error || `HTTP ${res.status}`;
+                throw new Error(msg);
+            }
+
+            Swal.close();
+            await Swal.fire({
                 icon: "success",
                 title: "Berhasil!",
-                text: "Portfolio Berhasil Diperbaharui!",
-                timer: 1500,
-                showConfirmButton: false
+                text: "Portfolio berhasil diperbarui",
+                timer: 1300,
+                showConfirmButton: false,
             });
+
             router.push("/admin/portfolio");
+        } catch (err) {
+            Swal.close();
+            await Swal.fire({
+                icon: "error",
+                title: "Gagal memperbarui",
+                text: err?.message || "Terjadi kesalahan",
+            });
+        } finally {
+            setSaving(false);
         }
     }
 
@@ -194,6 +257,7 @@ export default function EditPortfolioPage() {
                                                 accept="image/*"
                                                 onChange={handleFileChange}
                                                 className="sr-only"
+                                                disabled={uploading}
                                             />
                                         </label>
                                         <p className="pl-1">atau tarik dan lepas</p>
@@ -228,9 +292,7 @@ export default function EditPortfolioPage() {
                             <label className="block text-sm font-medium mb-1">Type *</label>
                             <select
                                 value={form.type}
-                                onChange={(e) =>
-                                    setForm((s) => ({ ...s, type: e.target.value }))
-                                }
+                                onChange={(e) => setForm((s) => ({ ...s, type: e.target.value }))}
                                 className="w-full px-4 py-2 border rounded-lg bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600"
                             >
                                 <option value="">Pilih Type</option>
@@ -246,9 +308,7 @@ export default function EditPortfolioPage() {
                             <label className="block text-sm font-medium mb-1">Judul *</label>
                             <input
                                 value={form.judul}
-                                onChange={(e) =>
-                                    setForm((s) => ({ ...s, judul: e.target.value }))
-                                }
+                                onChange={(e) => setForm((s) => ({ ...s, judul: e.target.value }))}
                                 className="w-full px-4 py-2 border rounded-lg bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600"
                                 placeholder="Contoh: Website UMKM A"
                             />
@@ -259,9 +319,7 @@ export default function EditPortfolioPage() {
                             <textarea
                                 rows={4}
                                 value={form.deskripsi}
-                                onChange={(e) =>
-                                    setForm((s) => ({ ...s, deskripsi: e.target.value }))
-                                }
+                                onChange={(e) => setForm((s) => ({ ...s, deskripsi: e.target.value }))}
                                 className="w-full px-4 py-2 border rounded-lg bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600"
                             />
                         </div>
@@ -273,9 +331,7 @@ export default function EditPortfolioPage() {
                             <textarea
                                 rows={3}
                                 value={form.techText}
-                                onChange={(e) =>
-                                    setForm((s) => ({ ...s, techText: e.target.value }))
-                                }
+                                onChange={(e) => setForm((s) => ({ ...s, techText: e.target.value }))}
                                 className="w-full px-4 py-2 border rounded-lg bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600"
                             />
                         </div>
@@ -286,9 +342,7 @@ export default function EditPortfolioPage() {
                             </label>
                             <input
                                 value={form.link_portfolio}
-                                onChange={(e) =>
-                                    setForm((s) => ({ ...s, link_portfolio: e.target.value }))
-                                }
+                                onChange={(e) => setForm((s) => ({ ...s, link_portfolio: e.target.value }))}
                                 className="w-full px-4 py-2 border rounded-lg bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600"
                                 placeholder="https://..."
                             />
