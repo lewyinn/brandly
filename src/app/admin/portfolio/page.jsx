@@ -326,7 +326,7 @@ export default function DashboardPage() {
                                                 {p.judul}
                                             </h3>
                                             {p.deskripsi && (
-                                                <p className="mt-1 text-sm text-gray-500 dark:text-gray-400 line-clamp-2 w-auto">
+                                                <p className="mt-1 text-sm text-gray-500 dark:text-gray-400 line-clamp-3 w-auto">
                                                     {p.deskripsi}
                                                 </p>
                                             )}
