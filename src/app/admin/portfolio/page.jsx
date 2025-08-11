@@ -271,7 +271,7 @@ export default function DashboardPage() {
                                     <tr key={p.id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
                                         <td className="px-6 py-4 whitespace-nowrap">
                                             <div className="text-sm font-medium text-gray-900 dark:text-white">{p.judul}</div>
-                                            {p.deskripsi && <div className="text-xs text-gray-500 dark:text-gray-400 line-clamp-1">{p.deskripsi}</div>}
+                                            {p.deskripsi && <div className="text-xs text-gray-500 dark:text-gray-400 line-clamp-1 w-auto">{p.deskripsi}</div>}
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap">
                                             <span className="px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">{p.type}</span>
@@ -326,7 +326,7 @@ export default function DashboardPage() {
                                                 {p.judul}
                                             </h3>
                                             {p.deskripsi && (
-                                                <p className="mt-1 text-sm text-gray-500 dark:text-gray-400 line-clamp-2">
+                                                <p className="mt-1 text-sm text-gray-500 dark:text-gray-400 line-clamp-2 w-auto">
                                                     {p.deskripsi}
                                                 </p>
                                             )}
