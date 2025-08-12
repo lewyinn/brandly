@@ -6,7 +6,7 @@ import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 
-const TYPES = ["UMKM", "Perusahaan", "Sekolah"];
+const TYPES = ["Website", "Sosial Media"];
 
 export default function EditProductPage() {
     const { setSidebarOpen } = useSidebar();

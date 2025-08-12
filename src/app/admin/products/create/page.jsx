@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import Swal from "sweetalert2";
 
-const TYPES = ["UMKM", "Perusahaan", "Sekolah"];
+const TYPES = ["Website", "Sosial Media"];
 
 export default function CreateProductPage() {
     const { setSidebarOpen } = useSidebar();

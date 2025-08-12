@@ -6,9 +6,8 @@ import { FaCheckCircle, FaArrowRight, FaSchool, FaBuilding, FaStore } from "reac
 import { motion } from "framer-motion";
 
 const TYPE_MAP = {
-    umkm: "UMKM",
-    company: "Perusahaan",
-    school: "Sekolah",
+    website: "Website",
+    sosmed: "Social Media",
 };
 
 const CategoryButton = ({ label, icon, active, onClick }) => (
