@@ -62,7 +62,7 @@ const PricingCard = ({ plan, highlight }) => (
 );
 
 export default function PaketLayanan() {
-    const [category, setCategory] = useState("umkm"); // umkm | company | school
+    const [category, setCategory] = useState("website"); 
     const [plans, setPlans] = useState([]);
     const [loading, setLoading] = useState(true);
 
