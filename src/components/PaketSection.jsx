@@ -7,7 +7,7 @@ import { motion } from "framer-motion";
 
 const TYPE_MAP = {
     website: "Website",
-    sosmed: "Social Media",
+    sosmed: "Sosial Media",
 };
 
 const CategoryButton = ({ label, icon, active, onClick }) => (
