@@ -1,17 +1,32 @@
-"use client" 
+"use client"
 
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import imgDigital from './../../public/assets/DigitalImage.jpg'
 import { FaBullhorn, FaCheck, FaCode, FaHandshake } from 'react-icons/fa'
 import Image from 'next/image'
 
 const About = () => {
+    const [profile, setProfile] = useState([]);
+
+    useEffect(() => {
+        async function fetchProfile() {
+            try {
+                const res = await fetch("/api/profile", { cache: "no-store" });
+                const data = await res.json();
+                setProfile(data);
+            } catch (err) {
+                console.error("Gagal fetch portfolio:", err);
+            }
+        }
+        fetchProfile();
+    }, []);
+
     return (
         <>
             <div className='py-20' id='about'>
                 <div className='flex flex-col lg:flex-row gap-16 justify-between items-center mx-auto'>
-                    
+
                     {/* Left Column (Image) - Animates when in view */}
                     <motion.div
                         initial={{ opacity: 0, x: -100 }}
@@ -22,7 +37,7 @@ const About = () => {
                     >
                         {/* Gambar */}
                         <Image src={imgDigital} loading='lazy'
-                            alt="Brandy Digital Creative - About Us"
+                            alt={`${profile.subtitle} - About Us`}
                             className="w-full h-auto lg:h-[480px] rounded-2xl object-cover" />
 
                         {/* Overlay dengan teks */}
@@ -57,7 +72,7 @@ const About = () => {
 
                         {/* Deskripsi */}
                         <p className="text-gray-400 text-base lg:text-lg mt-4">
-                            <span className='font-bold'>Brandy</span> lahir dari keyakinan bahwa setiap bisnis, berapapun skalanya, berhak memiliki citra digital yang kuat dan profesional.
+                            <span className='font-bold'>{profile.title}</span> lahir dari keyakinan bahwa setiap bisnis, berapapun skalanya, berhak memiliki citra digital yang kuat dan profesional.
                             Kami bukan sekadar penyedia jasa, tapi <span className='font-bold'>partner strategis</span> Anda dalam menavigasi dunia digital. Tim kami berdedikasi untuk memahami
                             visi Anda dan mengubahnya menjadi hasil nyata yang meningkatkan visibilitas dan kredibilitas brand Anda.
                         </p>

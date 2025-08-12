@@ -38,7 +38,7 @@ const Hero = () => {
 
                         {/* Logo & Judul */}
                         <div className="flex gap-3 items-center">
-                            {profile.logo_url && <Image src={profile.logo_url} width={36} height={36} alt="Brandy logo" className="rounded-xl shadow" />}
+                            {profile.logo_url && <Image src={profile.logo_url} width={36} height={36} alt={`${profile.title} Logo`} className="rounded-xl shadow" />}
                             <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-blue-800">{profile.subtitle}</h1>
                         </div>
 
@@ -55,7 +55,7 @@ const Hero = () => {
                         {/* Deskripsi */}
                         <p className="text-gray-400 text-base lg:text-lg mt-4">
                             Solusi digital kreatif untuk pertumbuhan bisnis dan brand Anda.
-                            Brandy bantu UMKM, Perusahaan & Sekolah lebih dikenal secara online, profesional, & terpercaya.
+                            {profile.title} bantu UMKM, Perusahaan & Sekolah lebih dikenal secara online, profesional, & terpercaya.
                         </p>
 
                         {/* Tombol */}

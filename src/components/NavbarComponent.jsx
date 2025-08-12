@@ -93,7 +93,7 @@ export function Navbar() {
                     {/* Logo */}
                     
                     <Link href="/" className="text-3xl font-bold text-white select-none flex gap-2 items-center">
-                        {profile.logo_url && <Image src={profile.logo_url} width={36} height={36} alt="Brandy logo" className="rounded-xl shadow" />}
+                        {profile.logo_url && <Image src={profile.logo_url} width={36} height={36} alt={`${profile.title} Logo`} className="rounded-xl shadow" />}
                         {profile.title}
                     </Link>
 

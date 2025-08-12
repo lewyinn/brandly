@@ -21,7 +21,7 @@ const CategoryButton = ({ label, icon, active, onClick }) => (
     </button>
 );
 
-const PricingCard = ({ plan, highlight }) => (
+const PricingCard = ({ plan, highlight, href }) => (
     <div
         className={`relative flex flex-col h-full rounded-2xl border p-6 shadow-lg transition-all duration-300 ${highlight ? "border-blue-500 bg-gray-800" : "border-gray-700 bg-gray-800/70 backdrop-blur-sm"
             }`}
@@ -51,7 +51,7 @@ const PricingCard = ({ plan, highlight }) => (
         </ul>
 
         <Link
-            href="https://wa.me/6285282932422?text=Halo%20Brandy,%20saya%20tertarik%20dengan%20paket%20layanan%20Anda."
+            href={href}
             target="_blank"
             className="mt-8 flex items-center justify-center gap-2 rounded-lg bg-blue-600 px-5 py-3 text-center text-base font-semibold text-white transition hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-800"
         >
@@ -62,9 +62,24 @@ const PricingCard = ({ plan, highlight }) => (
 );
 
 export default function PaketLayanan() {
-    const [category, setCategory] = useState("website"); 
+    const [category, setCategory] = useState("website");
     const [plans, setPlans] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [profile, setProfile] = useState([]);
+
+    useEffect(() => {
+        async function fetchProfile() {
+            try {
+                const res = await fetch("/api/profile", { cache: "no-store" });
+                const data = await res.json();
+                setProfile(data);
+            } catch (err) {
+                console.error("Gagal fetch portfolio:", err);
+            }
+        }
+        fetchProfile();
+    }, []);
+
 
     async function loadProductsFor(cat) {
         try {
@@ -161,6 +176,7 @@ export default function PaketLayanan() {
                                         features: Array.isArray(p.features) ? p.features : [],
                                     }}
                                     highlight={i === popularIndex}
+                                    href={`https://wa.me/${profile.whatsapp}`}
                                 />
                             ))
                         )}

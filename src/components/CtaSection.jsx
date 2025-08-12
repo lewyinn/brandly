@@ -43,7 +43,7 @@ export default function CTA() {
 
                         <div className="text-center lg:text-right">
                             <Link
-                                href={`https://wa.me/${profile.whatsapp}?text=Halo%20Brandy,%20saya%20tertarik%20untuk%20berkonsultasi%20mengenai%20layanan%20Anda.`}
+                                href={`https://wa.me/${profile.whatsapp}?text=Halo%20Brandly,%20saya%20tertarik%20untuk%20berkonsultasi%20mengenai%20layanan%20Anda.`}
                                 target="_blank"
                                 className="inline-flex items-center gap-3 rounded-full bg-white px-8 py-4 text-base font-bold text-blue-600 transition hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-blue-600">
                                 <FaWhatsapp className="h-6 w-6" />
