@@ -125,22 +125,16 @@ export default function PaketLayanan() {
                 >
                     <div className="mt-12 flex flex-col sm:flex-row justify-center items-center gap-4">
                         <CategoryButton
-                            label="Untuk UMKM"
+                            label="Website"
                             icon={<FaStore />}
-                            active={category === "umkm"}
-                            onClick={() => setCategory("umkm")}
+                            active={category === "website"}
+                            onClick={() => setCategory("website")}
                         />
                         <CategoryButton
-                            label="Untuk Perusahaan"
+                            label="Sosial Media"
                             icon={<FaBuilding />}
-                            active={category === "company"}
-                            onClick={() => setCategory("company")}
-                        />
-                        <CategoryButton
-                            label="Untuk Sekolah"
-                            icon={<FaSchool />}
-                            active={category === "school"}
-                            onClick={() => setCategory("school")}
+                            active={category === "sosmed"}
+                            onClick={() => setCategory("sosmed")}
                         />
                     </div>
 
